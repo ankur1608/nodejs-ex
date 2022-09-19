@@ -28,6 +28,34 @@
                         }
                     }
                 }
+                stage('cleanup') {
+                    steps {
+                        script {
+                             openshift.withCluster() {
+                                 openshift.withProject() {
+                                      // delete everything with this template label
+                                       sh '''#!/bin/bash
+                                       oc delete rc mongodb-1       
+                                       oc delete rc nodejs-mongodb-example-1       
+                                       oc delete service mongodb
+                                       oc delete service nodejs-mongodb-example
+                                       oc delete deploymentconfig mongodb
+                                       oc delete deploymentconfig nodejs-mongodb-example
+                                       oc delete buildconfig nodejs-mongodb-example
+                                       oc delete imagestream nodejs-mongodb-example
+                                       oc delete route nodejs-mongodb-example
+                               
+                                     // delete any secrets with this template label
+                                       if (openshift.selector("secrets", templateName).exists()) {
+                                            sh '''#!/bin/bash
+                                            oc delete secret nodejs-mongodb-example
+                                                               
+                                     }
+                                }
+                            }
+                        } // script
+                    } // steps
+                } // stage        
          //       stage('cleanup') {
          //           steps {
          //               script {
