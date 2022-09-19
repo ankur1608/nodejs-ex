@@ -98,7 +98,7 @@
                         } // script
                     } // steps
                 } // stage
-                stage('Approval') {
+                stage('Approval-dev') {
                       input {
                           message "Proceed to deploy on Dev?"
                           ok "YES"
@@ -122,7 +122,7 @@
                     } // steps
                 } // stage
                     
-                stage('Approval') {
+                stage('Approval-prod') {
                       input {
                           message "Proceed to deploy on Prod?"
                           ok "YES"
