@@ -84,6 +84,15 @@
                         } // script
                     } // steps
                 } // stage
+                stage('Approval') {
+                      input {
+                          message "Proceed to deploy on Dev?"
+                          ok "YES"
+                     }
+                     steps {
+                           echo "Approved"
+                     }   
+                }                    
                 stage('build') {
                     steps {
                         script {
@@ -136,9 +145,26 @@
                         script {
                             openshift.withCluster() {
                                 openshift.withProject() {
-                                    def rm = openshift.selector("dc", templateName).rollout()
-                                    openshift.selector("dc", templateName).related('pods').untilEach(1) {
-                                        return (it.object().status.phase == "Running")
+//                                    def rm = openshift.selector("dc", templateName).rollout()
+//                                    openshift.selector("dc", templateName).related('pods').untilEach(1) {
+//                                        return (it.object().status.phase == "Running")
+                                      // delete everything with this template label
+                                       sh '''#!/bin/bash
+                                       oc delete rc mongodb-1       
+                                       oc delete rc nodejs-mongodb-example-1       
+                                       oc delete service mongodb
+                                       oc delete service nodejs-mongodb-example
+                                       oc delete deploymentconfig mongodb
+                                       oc delete deploymentconfig nodejs-mongodb-example
+                                       oc delete buildconfig nodejs-mongodb-example
+                                       oc delete imagestream nodejs-mongodb-example
+                                       oc delete route nodejs-mongodb-example
+                                      '''
+                                     // delete any secrets with this template label
+                                       if (openshift.selector("secrets", templateName).exists()) {
+                                            sh '''#!/bin/bash
+                                            oc delete secret nodejs-mongodb-example
+                                            '''                                                                
                                     }
                                 }
                             }
