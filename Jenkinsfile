@@ -44,12 +44,12 @@
                                        oc delete buildconfig nodejs-mongodb-example
                                        oc delete imagestream nodejs-mongodb-example
                                        oc delete route nodejs-mongodb-example
-                               
+                                       '''
                                      // delete any secrets with this template label
                                        if (openshift.selector("secrets", templateName).exists()) {
                                             sh '''#!/bin/bash
                                             oc delete secret nodejs-mongodb-example
-                                                               
+                                            '''                         
                                      }
                                 }
                             }
