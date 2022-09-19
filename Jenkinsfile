@@ -122,9 +122,10 @@
                         script {
                             openshift.withCluster() {
                                 openshift.withProject(devProject) {
-                                    def rm = openshift.selector("dc", templateName).rollout()
-                                    openshift.selector("dc", templateName).related('pods').untilEach(1) {
-                                        return (it.object().status.phase == "Running")
+                                    echo "Using project: ${openshift.project()}"
+                              //      def rm = openshift.selector("dc", templateName).rollout()
+                              //      openshift.selector("dc", templateName).related('pods').untilEach(1) {
+                              //          return (it.object().status.phase == "Running")
                                     }
                                 }
                             }
