@@ -123,6 +123,8 @@
                             openshift.withCluster() {
                                 openshift.withProject(devProject) {
                                     echo "Using project: ${openshift.project()}"
+                                    // create a new application from the templatePath//
+                                    openshift.newApp(templatePath)
                               //      def rm = openshift.selector("dc", templateName).rollout()
                               //      openshift.selector("dc", templateName).related('pods').untilEach(1) {
                               //          return (it.object().status.phase == "Running")
