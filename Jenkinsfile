@@ -1,6 +1,7 @@
         def templatePath = 'http://192.168.243.240/nodejs-mongodb.json'
         // name of the template that will be created
         def templateName = 'nodejs-mongodb-example'
+        def devProject = 'nodejs-ex-dev'
         // NOTE, the "pipeline" directive/closure from the declarative pipeline syntax needs to include, or be nested outside,
         // and "openshift" directive/closure from the OpenShift Client Plugin for Jenkins.  Otherwise, the declarative pipeline engine
         // will not be fully engaged.
@@ -120,7 +121,7 @@
                     steps {
                         script {
                             openshift.withCluster() {
-                                openshift.withProject() {
+                                openshift.withProject(devProject) {
                                     def rm = openshift.selector("dc", templateName).rollout()
                                     openshift.selector("dc", templateName).related('pods').untilEach(1) {
                                         return (it.object().status.phase == "Running")
