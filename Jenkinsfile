@@ -100,14 +100,14 @@
                 } // stage
                 stage('Approval') {
                       input {
-                          message "Proceed to deploy?"
+                          message "Proceed to deploy on Dev?"
                           ok "YES"
                      }
                      steps {
                            echo "Approved"
                      }   
                 }
-                stage('deploy') {
+                stage('deploy-dev') {
                     steps {
                         script {
                             openshift.withCluster() {
@@ -121,6 +121,30 @@
                         } // script
                     } // steps
                 } // stage
+                    
+                stage('Approval') {
+                      input {
+                          message "Proceed to deploy on Prod?"
+                          ok "YES"
+                     }
+                     steps {
+                           echo "Approved"
+                     }   
+                }
+                stage('deploy-prod') {
+                    steps {
+                        script {
+                            openshift.withCluster() {
+                                openshift.withProject() {
+                                    def rm = openshift.selector("dc", templateName).rollout()
+                                    openshift.selector("dc", templateName).related('pods').untilEach(1) {
+                                        return (it.object().status.phase == "Running")
+                                    }
+                                }
+                            }
+                        } // script
+                    } // steps
+                } // stage                    
                 stage('tag') {
                     steps {
                         script {
