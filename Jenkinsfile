@@ -117,11 +117,15 @@
                             openshift.withCluster() {
                                 openshift.withProject(prodProject) {
                                    echo "Using project: ${openshift.project()}"
- //                                  openshift.newApp(templatePath)
-                                    def rm = openshift.selector("dc", templateName).rollout()
-                                    openshift.selector("dc", templateName).related('pods').untilEach(1) {
-                                        return (it.object().status.phase == "Running")                         
-                                    }
+                                    // delete earlier deployment
+                                    openshift.selector("all", [ template : templateName ]).delete()
+                                    openshift.selector("secrets", templateName).delete()
+                                    // create a new application from the templatePath//                                        
+                                   openshift.newApp(templatePath)
+ //                                   def rm = openshift.selector("dc", templateName).rollout()
+ //                                   openshift.selector("dc", templateName).related('pods').untilEach(1) {
+ //                                       return (it.object().status.phase == "Running")                         
+ //                                   }
                                 }
                             }
                         } // script
