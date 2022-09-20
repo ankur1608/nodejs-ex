@@ -19,50 +19,18 @@
             }
 
             stages {
-                stage('preamble') {
+                stage('checkout & build') {
                     steps {
                         script {
                             openshift.withCluster() {
                                 openshift.withProject() {
                                     echo "Using project: ${openshift.project()}"
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('cleanup') {
-                    steps {
-                        script {
-                            openshift.withCluster() {
-                               openshift.withProject() {
                                     // delete everything with this template label
-                                   openshift.selector("all", [ template : templateName ]).delete()
-                                    // delete any secrets with this template label
-                                   if (openshift.selector("secrets", templateName).exists()) {
-                                        openshift.selector("secrets", templateName).delete()
-                                   }
-                                }
-                            }
-                        } // script
-                    } // steps
-                } // stage
-                stage('create') {
-                    steps {
-                        script {
-                            openshift.withCluster() {
-                                openshift.withProject() {
+                                    openshift.selector("all", [ template : templateName ]).delete()
+                                    openshift.selector("secrets", templateName).delete()
                                     // create a new application from the templatePath//
                                     openshift.newApp(templatePath)
-                                }
-                            }
-                        } // script
-                    } // steps
-                } // stage
-                stage('build') {
-                    steps {
-                        script {
-                            openshift.withCluster() {
-                                openshift.withProject() {
+                                    // Update buildconfig
                                     def builds = openshift.selector("bc", templateName).related('builds')
                                     builds.untilEach(1) {
                                         return (it.object().status.phase == "Complete")
