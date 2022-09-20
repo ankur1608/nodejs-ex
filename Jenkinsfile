@@ -117,10 +117,10 @@
                             openshift.withCluster() {
                                 openshift.withProject(prodProject) {
                                    echo "Using project: ${openshift.project()}"
-                                   openshift.newApp(templatePath)
-//                                    def rm = openshift.selector("dc", templateName).rollout()
-//                                    openshift.selector("dc", templateName).related('pods').untilEach(1) {
-//                                        return (it.object().status.phase == "Running")                         
+ //                                  openshift.newApp(templatePath)
+                                    def rm = openshift.selector("dc", templateName).rollout()
+                                    openshift.selector("dc", templateName).related('pods').untilEach(1) {
+                                        return (it.object().status.phase == "Running")                         
                                     
                                 }
                             }
